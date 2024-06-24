@@ -1,0 +1,163 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        #board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 5px;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background-color: #3498db;
+            color: #fff;
+            border: 2px solid #2980b9;
+            transition: background-color 0.3s;
+        }
+
+        .cell:hover {
+            background-color: #2980b9;
+        }
+
+        #message {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+
+        #restartButton {
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #2ecc71;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+        }
+
+        #restartButton:hover {
+            background-color: #27ae60;
+        }
+    </style>
+</head>
+<body>
+    <div id="board"></div>
+    <div id="message"></div>
+    <button id="restartButton">Restart Game</button>
+
+    <script>
+        // Game logic
+        let currentPlayer = 'X';
+        let gameBoard = ['', '', '', '', '', '', '', '', ''];
+        let gameOver = false;
+
+        const boardElement = document.getElementById('board');
+        const messageElement = document.getElementById('message');
+        const restartButton = document.getElementById('restartButton');
+
+        // Initialize the game board
+        function initializeBoard() {
+            for (let i = 0; i < 9; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.dataset.index = i;
+                cell.addEventListener('click', handleCellClick);
+                boardElement.appendChild(cell);
+            }
+        }
+
+        // Initialize the restart button
+        function initializeRestartButton() {
+            restartButton.addEventListener('click', resetGame);
+        }
+
+        // Handle cell click
+        function handleCellClick(event) {
+            if (gameOver) return;
+
+            const index = event.target.dataset.index;
+
+            if (gameBoard[index] === '') {
+                gameBoard[index] = currentPlayer;
+                event.target.textContent = currentPlayer;
+                checkForWinner();
+                switchPlayer();
+            }
+        }
+
+        // Switch player turn
+        function switchPlayer() {
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        }
+
+        // Check for a winner
+        function checkForWinner() {
+            const winningCombinations = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+                [0, 4, 8], [2, 4, 6]             // Diagonals
+            ];
+
+            for (const combination of winningCombinations) {
+                const [a, b, c] = combination;
+                if (gameBoard[a] !== '' && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
+                    displayResult(`${currentPlayer} wins!`);
+                    gameOver = true;
+                    return;
+                }
+            }
+
+            if (!gameBoard.includes('')) {
+                displayResult("It's a tie!");
+                gameOver = true;
+            }
+        }
+
+        // Display result message with popup
+        function displayResult(message) {
+            messageElement.textContent = message;
+
+            // Show a popup with the result
+            setTimeout(() => {
+                alert(message);
+            }, 100);
+        }
+
+        // Reset the game
+        function resetGame() {
+            gameBoard = ['', '', '', '', '', '', '', '', ''];
+            currentPlayer = 'X';
+            gameOver = false;
+            messageElement.textContent = '';
+            boardElement.innerHTML = '';
+            initializeBoard();
+        }
+
+        // Initialize the game
+        initializeBoard();
+        initializeRestartButton();
+    </script>
+</body>
+</html>
